@@ -43,17 +43,19 @@ public class GeneticProgrammingAppletTest
         Container container = new Container();
         GeneticProgrammingApplet applet = new GeneticProgrammingApplet(testData);
         applet.prepareGUI(container);
-        Component[] comps = container.getComponents();
 
+        Component[] comps = container.getComponents();
         assert comps.length == 2 : "Wrong number of components: " + comps.length;
+        assert comps[0] instanceof JPanel : "Wrong type for controls component: " + comps[0].getClass().getName();
+        assert comps[1] instanceof JPanel : "Wrong type for monitor component" + comps[1].getClass().getName();
         
-        Component controls = comps[0];
-        assert controls instanceof Box : "Wrong type for controls component";
-        
-        Component monitor = comps[1];
-        assert monitor instanceof JPanel : "Wrong type for monitor component";
+        JPanel controls = (JPanel) comps[0];
+        assert controls.getComponentCount() == 1 : "Wrong number of components in controls: "
+                                                   + controls.getComponentCount();
+        assert controls.getComponents()[0] instanceof Box : "Wrong type for controls subcomponent: "
+                                                            + controls.getComponents()[0].getClass().getName();
     }
-    
+
     @Test
     public void testStartEvolution()
     {
@@ -70,7 +72,7 @@ public class GeneticProgrammingAppletTest
         Component[] comps = container.getComponents();
 
         JButton startButton = null;
-        for (Component c : ((Box) comps[0]).getComponents())
+        for (Component c : ((Box) ((JPanel) comps[0]).getComponents()[0]).getComponents())
         {
             if (c instanceof JButton && ((JButton) c).getText().equals("Start"))
             {
@@ -80,7 +82,8 @@ public class GeneticProgrammingAppletTest
         }
         assert startButton != null : "Start button not found";
         
-        assert startButton.getActionListeners().length == 1 : "Wrong action listener count: " + startButton.getActionListeners().length;
+        assert startButton.getActionListeners().length == 1 : "Wrong action listener count: "
+                                                              + startButton.getActionListeners().length;
         
         // Make sure that we can at least start the evolution.
         startButton.getActionListeners()[0].actionPerformed(null);
