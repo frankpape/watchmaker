@@ -15,6 +15,10 @@
 //=============================================================================
 package org.uncommons.watchmaker.examples.geneticprogramming;
 
+import org.uncommons.watchmaker.framework.TerminationCondition;
+
+import org.uncommons.watchmaker.framework.EvolutionObserver;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,13 +35,13 @@ import org.uncommons.watchmaker.framework.termination.TargetFitness;
 
 /**
  * Simple tree-based genetic programming application based on the first example
- * in Chapter 11 of Toby Segaran's Progamming Collective Intelligence.
+ * in Chapter 11 of Toby Segaran's Programming Collective Intelligence.
  * @author Daniel Dyer
  */
 public class GeneticProgrammingExample
 {
     // This data describes the problem.  For each pair of inputs, the generated program
-    // should return the associated output.  The goal of this appliction is to generalise
+    // should return the associated output.  The goal of this application is to generalise
     // the examples into an equation.
     private static final Map<double[], Double> TEST_DATA = new HashMap<double[], Double>();
     static
@@ -65,6 +69,35 @@ public class GeneticProgrammingExample
      */
     public static Node evolveProgram(Map<double[], Double> data)
     {
+        @SuppressWarnings("unchecked")
+        EvolutionObserver<Node>[] observers = (EvolutionObserver<Node>[]) new EvolutionObserver[]
+        {
+            new EvolutionLogger<Node>()
+        };
+        TerminationCondition[] conditions = new TerminationCondition[]
+        {
+            new TargetFitness(0d, false)
+        };
+        return evolveProgram(data, 1000, 5, observers, conditions);
+    }
+
+
+    /**
+     * Evolve a function to fit the specified data.
+     * @param data A map from input values to expected output values.
+     * @param populationSize number of candidate programs per generation.
+     * @param eliteCount number of candidates preserved through elitism.
+     * @param extraObservers additional observers to add to the EvolutionEngine.
+     * @param terminationConditions termination conditions for the evolution.
+     * @return A program that generates the correct outputs for all specified
+     * sets of input.
+     */
+    public static Node evolveProgram(Map<double[], Double> data,
+                                     int populationSize,
+                                     int eliteCount,
+                                     EvolutionObserver<Node>[] observers,
+                                     TerminationCondition[] terminationConditions)
+    {
         TreeFactory factory = new TreeFactory(2, // Number of parameters passed into each program.
                                               4, // Maximum depth of generated trees.
                                               Probability.EVENS, // Probability that a node is a function node.
@@ -79,7 +112,9 @@ public class GeneticProgrammingExample
                                                                              evaluator,
                                                                              new RouletteWheelSelection(),
                                                                              new MersenneTwisterRNG());
-        engine.addEvolutionObserver(new EvolutionLogger<Node>());
-        return engine.evolve(1000, 5, new TargetFitness(0d, evaluator.isNatural()));
+        for (EvolutionObserver<Node> observer : observers) {
+            engine.addEvolutionObserver(observer);
+        }
+        return engine.evolve(populationSize, eliteCount, terminationConditions);
     }
 }

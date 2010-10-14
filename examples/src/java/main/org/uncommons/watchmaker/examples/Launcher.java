@@ -22,6 +22,7 @@ import java.util.Map;
 import org.uncommons.util.reflection.ReflectionUtils;
 import org.uncommons.watchmaker.examples.biomorphs.BiomorphApplet;
 import org.uncommons.watchmaker.examples.bits.BitsExample;
+import org.uncommons.watchmaker.examples.geneticprogramming.GeneticProgrammingApplet;
 import org.uncommons.watchmaker.examples.geneticprogramming.GeneticProgrammingExample;
 import org.uncommons.watchmaker.examples.monalisa.MonaLisaApplet;
 import org.uncommons.watchmaker.examples.strings.StringsExample;
@@ -40,6 +41,7 @@ public class Launcher
         EXAMPLES.put("biomorphs", BiomorphApplet.class);
         EXAMPLES.put("bits", BitsExample.class);
         EXAMPLES.put("gp", GeneticProgrammingExample.class);
+        EXAMPLES.put("gp-gui", GeneticProgrammingApplet.class);
         EXAMPLES.put("monalisa", MonaLisaApplet.class);
         EXAMPLES.put("salesman", TravellingSalesmanApplet.class);
         EXAMPLES.put("strings", StringsExample.class);
